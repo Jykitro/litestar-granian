@@ -6,6 +6,10 @@
 pip install litestar-granian
 ```
 
+```shell uv
+uv add litestar-granian
+```
+
 ## Usage
 
 Here is a basic application that demonstrates how to use the plugin.
