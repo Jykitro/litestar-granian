@@ -108,6 +108,13 @@ def option(*param_decls: str, cls: "Optional[type[Option]]" = None, **attrs: Any
 @option("-H", "--host", help="Host address to bind to", default="127.0.0.1", show_default=True, envvar="LITESTAR_HOST")
 @option("-p", "--port", help="Port to bind to", type=int, default=8000, show_default=True, envvar="LITESTAR_PORT")
 @option(
+    "--server-name",
+    help="Server name to use in HTTP headers",
+    default="granian",
+    show_default=True,
+    envvar="LITESTAR_SERVER_NAME",
+)
+@option(
     "--uds",
     type=ClickPath(exists=False, writable=True),
     help="Unix Domain Socket path (experimental)",
@@ -415,6 +422,7 @@ def run_command(
     app: "Litestar",
     host: str,
     port: int,
+    server_name: str,
     uds: Optional[str],
     http: "HTTPModes",
     wc: int,
@@ -520,6 +528,7 @@ def run_command(
             _run_granian_in_subprocess(
                 env=env,
                 port=port,
+                server_name=server_name,
                 wc=workers,
                 host=host,
                 http=http,
@@ -575,6 +584,7 @@ def run_command(
             _run_granian(
                 env=env,
                 port=port,
+                server_name=server_name,
                 wc=workers,
                 host=host,
                 http=http,
@@ -633,6 +643,7 @@ def _run_granian(
     env: "LitestarEnv",
     host: str,
     port: int,
+    server_name: str,
     uds: Optional[str],
     http: "HTTPModes",
     wc: int,
@@ -721,6 +732,7 @@ def _run_granian(
     server_args: dict[str, Any] = {
         "address": host,
         "port": port,
+        "server_name": server_name,
         "interface": Interfaces.ASGI,
         "workers": wc,
         "blocking_threads": blocking_threads,
@@ -864,6 +876,7 @@ def _run_granian_in_subprocess(
     env: "LitestarEnv",
     host: str,
     port: int,
+    server_name: str,
     uds: Optional[str],
     http: "HTTPModes",
     wc: int,
@@ -918,6 +931,7 @@ def _run_granian_in_subprocess(
         "reload": reload,
         "host": host,
         "port": port,
+        "server-name": server_name,
         "interface": Interfaces.ASGI.value,
         "http": http.value,
         "workers": wc,
